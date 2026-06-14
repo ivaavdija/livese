@@ -1,0 +1,73 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import { AppProvider } from './context/AppContext.jsx';
+import Layout from './components/layout/Layout.jsx';
+import Login from './pages/Login.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import EventDetail from './pages/EventDetail.jsx';
+import IncidentCenter from './pages/IncidentCenter.jsx';
+import IncidentDetail from './pages/IncidentDetail.jsx';
+import Handovers from './pages/Handovers.jsx';
+import Scheduling from './pages/Scheduling.jsx';
+import AddEventWizard from './pages/AddEventWizard.jsx';
+import Accounts from './pages/Accounts.jsx';
+import Team from './pages/Team.jsx';
+import AlertCenter from './pages/AlertCenter.jsx';
+import AlertRules from './pages/AlertRules.jsx';
+import Reporting from './pages/Reporting.jsx';
+import Integrations from './pages/Integrations.jsx';
+import Settings from './pages/Settings.jsx';
+import Profile from './pages/Profile.jsx';
+import Notifications from './pages/Notifications.jsx';
+
+function ProtectedRoute({ children }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
+
+function PublicRoute({ children }) {
+  const { user } = useAuth();
+  if (user) return <Navigate to="/" replace />;
+  return children;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route index element={<Dashboard />} />
+        <Route path="events/:id" element={<EventDetail />} />
+        <Route path="incidents" element={<IncidentCenter />} />
+        <Route path="incidents/:id" element={<IncidentDetail />} />
+        <Route path="scheduling" element={<Scheduling />} />
+        <Route path="scheduling/new" element={<AddEventWizard />} />
+        <Route path="handovers" element={<Handovers />} />
+        <Route path="accounts" element={<Accounts />} />
+        <Route path="team" element={<Team />} />
+        <Route path="alerts" element={<AlertCenter />} />
+        <Route path="rules" element={<AlertRules />} />
+        <Route path="reporting" element={<Reporting />} />
+        <Route path="integrations" element={<Integrations />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="notifications" element={<Notifications />} />
+      </Route>
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppProvider>
+          <AppRoutes />
+        </AppProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+export default App;
